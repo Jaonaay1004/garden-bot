@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>?? PlantSense IoT Dashboard</title>
+<title>🌱 PlantSense IoT Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -31,7 +31,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 ::-webkit-scrollbar{width:5px;background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
 
-/* -- Layout -- */
+/* ── Layout ── */
 .page{min-height:100vh;background:radial-gradient(ellipse at 15% 10%,#182e08 0%,#0a1206 50%,#060b04 100%);}
 .header{position:sticky;top:0;z-index:100;padding:18px 28px;background:rgba(6,10,4,0.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
 .logo{display:flex;align-items:center;gap:12px;}
@@ -39,7 +39,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 .logo sub{display:block;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;}
 .main{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
 
-/* -- Status bar -- */
+/* ── Status bar ── */
 .status-bar{display:flex;align-items:center;gap:14px;padding:9px 18px;background:rgba(0,0,0,0.35);border-radius:100px;border:1px solid var(--border);flex-wrap:wrap;}
 .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .4s;}
 .status-dot.live{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s ease-in-out infinite;}
@@ -52,11 +52,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 .offline-text{color:var(--red);}
 .connecting-text{color:var(--yellow);}
 
-/* -- Alerts -- */
+/* ── Alerts ── */
 #alerts{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
 .alert-item{padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;animation:slideIn .4s ease;}
 
-/* -- Gauge grid -- */
+/* ── Gauge grid ── */
 .gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:22px;}
 .gauge-card{background:linear-gradient(145deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:22px;padding:22px 16px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;backdrop-filter:blur(10px);position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;cursor:default;}
 .gauge-card:hover{transform:translateY(-4px);}
@@ -64,19 +64,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 .gauge-label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;}
 .gauge-state{margin-top:4px;display:inline-block;padding:3px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.08em;}
 
-/* -- Raw values -- */
+/* ── Raw values ── */
 .raw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:22px;}
 .raw-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:14px;}
 .raw-icon{font-size:18px;}
 .raw-key{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.1em;}
 .raw-val{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;margin-top:2px;}
 
-/* -- Charts -- */
+/* ── Charts ── */
 .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:22px;}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 18px;}
 .chart-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:10px;}
 
-/* -- AI Advisor -- */
+/* ── AI Advisor ── */
 .ai-card{background:linear-gradient(135deg,rgba(30,55,20,.55),rgba(15,25,10,.7));border:1px solid rgba(100,200,80,.2);border-radius:24px;padding:26px;backdrop-filter:blur(12px);}
 .ai-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:14px;}
 .ai-title{font-family:'Playfair Display',serif;font-size:18px;color:#c8f0a0;}
@@ -89,12 +89,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 .ai-dots{display:flex;justify-content:center;gap:8px;margin-bottom:12px;}
 .ai-dot{width:7px;height:7px;border-radius:50%;background:#80c060;}
 .ai-loading-text{color:#6a8050;font-size:13px;font-family:'DM Mono',monospace;}
-.ai-result{background:rgba(0,0,0,.25);border-radius:14px;padding:18px 22px;color:#d0e8b8;font-size:14px;line-height:1.9;white-space:normal;border-left:3px solid rgba(100,200,80,.5);max-height:none;overflow:visible;}
+.ai-result{background:rgba(0,0,0,.25);border-radius:14px;padding:18px 22px;color:#d0e8b8;font-size:14px;line-height:1.9;white-space:normal;border-left:3px solid rgba(100,200,80,.5);}
 
-/* -- Decorative leaves -- */
+/* ── Decorative leaves ── */
 .leaf{position:fixed;opacity:.035;pointer-events:none;z-index:0;font-size:60px;animation:floatLeaf 4s ease-in-out infinite;}
 
-/* -- Animations -- */
+/* ── Animations ── */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
 @keyframes floatLeaf{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-14px) rotate(6deg)}}
@@ -106,27 +106,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
 <div class="page">
 
   <!-- Leaves -->
-  <div class="leaf" style="top:8%;right:-1%;animation-delay:0s">??</div>
-  <div class="leaf" style="top:28%;right:0%;animation-delay:.8s;font-size:48px">??</div>
-  <div class="leaf" style="top:55%;right:-1%;animation-delay:1.6s;font-size:72px">??</div>
-  <div class="leaf" style="top:75%;right:0%;animation-delay:.4s;font-size:44px">??</div>
+  <div class="leaf" style="top:8%;right:-1%;animation-delay:0s">🌿</div>
+  <div class="leaf" style="top:28%;right:0%;animation-delay:.8s;font-size:48px">🌱</div>
+  <div class="leaf" style="top:55%;right:-1%;animation-delay:1.6s;font-size:72px">🍃</div>
+  <div class="leaf" style="top:75%;right:0%;animation-delay:.4s;font-size:44px">🌿</div>
 
   <!-- Header -->
   <header class="header">
     <div class="logo">
-      <span style="font-size:26px">??</span>
+      <span style="font-size:26px">🌱</span>
       <div>
         <h1>PlantSense IoT</h1>
-        <sub>ESP32 � DHT11 � Capacitive Soil � LDR � WebSocket</sub>
+        <sub>ESP32 · DHT11 · Capacitive Soil · LDR · WebSocket</sub>
       </div>
     </div>
     <div class="status-bar">
       <div id="dot" class="status-dot connecting"></div>
-      <span id="status-text" class="stat-text connecting-text">??????????????...</span>
+      <span id="status-text" class="stat-text connecting-text">กำลังเชื่อมต่อ...</span>
       <div class="sep"></div>
-      <span class="stat-text" id="last-update">??????????????</span>
+      <span class="stat-text" id="last-update">ยังไม่มีข้อมูล</span>
       <div class="sep"></div>
-      <span class="stat-text" id="read-count">??????? 0 ?????</span>
+      <span class="stat-text" id="read-count">อ่านค่า 0 ครั้ง</span>
       <div class="sep"></div>
       <span class="stat-text">Interval: 4s</span>
     </div>
@@ -147,11 +147,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
           <circle cx="70" cy="70" r="52" fill="none" stroke="#70e090" stroke-width="10"
             stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
             id="arc-soil" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #70e090)"/>
-          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#70e090">??</text>
-          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-soil">�%</text>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#70e090">💧</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-soil">—%</text>
         </svg>
         <div class="gauge-label">Soil Moisture</div>
-        <div class="gauge-state" id="state-soil" style="background:#70e09022;border:1px solid #70e09055;color:#70e090">�</div>
+        <div class="gauge-state" id="state-soil" style="background:#70e09022;border:1px solid #70e09055;color:#70e090">—</div>
       </div>
 
       <div class="gauge-card" id="card-temp">
@@ -162,11 +162,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
           <circle cx="70" cy="70" r="52" fill="none" stroke="#f09060" stroke-width="10"
             stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
             id="arc-temp" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #f09060)"/>
-          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#f09060">???</text>
-          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-temp">��C</text>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#f09060">🌡️</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-temp">—°C</text>
         </svg>
         <div class="gauge-label">Temperature</div>
-        <div class="gauge-state" id="state-temp" style="background:#f0906022;border:1px solid #f0906055;color:#f09060">�</div>
+        <div class="gauge-state" id="state-temp" style="background:#f0906022;border:1px solid #f0906055;color:#f09060">—</div>
       </div>
 
       <div class="gauge-card" id="card-hum">
@@ -177,11 +177,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
           <circle cx="70" cy="70" r="52" fill="none" stroke="#68c8f8" stroke-width="10"
             stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
             id="arc-hum" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #68c8f8)"/>
-          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#68c8f8">??</text>
-          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-hum">�%</text>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#68c8f8">💦</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-hum">—%</text>
         </svg>
         <div class="gauge-label">Humidity</div>
-        <div class="gauge-state" id="state-hum" style="background:#68c8f822;border:1px solid #68c8f855;color:#68c8f8">�</div>
+        <div class="gauge-state" id="state-hum" style="background:#68c8f822;border:1px solid #68c8f855;color:#68c8f8">—</div>
       </div>
 
       <div class="gauge-card" id="card-light">
@@ -192,50 +192,50 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
           <circle cx="70" cy="70" r="52" fill="none" stroke="#f0d060" stroke-width="10"
             stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
             id="arc-light" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #f0d060)"/>
-          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#f0d060">??</text>
-          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-light">�%</text>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#f0d060">☀️</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-light">—%</text>
         </svg>
         <div class="gauge-label">Light Level</div>
-        <div class="gauge-state" id="state-light" style="background:#f0d06022;border:1px solid #f0d06055;color:#f0d060">�</div>
+        <div class="gauge-state" id="state-light" style="background:#f0d06022;border:1px solid #f0d06055;color:#f0d060">—</div>
       </div>
     </div>
 
     <!-- Raw Values -->
     <div class="raw-grid">
       <div class="raw-card">
-        <span class="raw-icon">??</span>
-        <div><div class="raw-key">SOIL � PIN 34 (ADC)</div><div class="raw-val" id="raw-soil" style="color:#70e090">�</div></div>
+        <span class="raw-icon">🌿</span>
+        <div><div class="raw-key">SOIL · PIN 34 (ADC)</div><div class="raw-val" id="raw-soil" style="color:#70e090">—</div></div>
       </div>
       <div class="raw-card">
-        <span class="raw-icon">???</span>
-        <div><div class="raw-key">DHT11 � PIN 25</div><div class="raw-val" id="raw-dht" style="color:#f09060">�</div></div>
+        <span class="raw-icon">🌡️</span>
+        <div><div class="raw-key">DHT11 · PIN 25</div><div class="raw-val" id="raw-dht" style="color:#f09060">—</div></div>
       </div>
       <div class="raw-card">
-        <span class="raw-icon">??</span>
-        <div><div class="raw-key">LDR � PIN 32 (ADC)</div><div class="raw-val" id="raw-ldr" style="color:#f0d060">�</div></div>
+        <span class="raw-icon">☀️</span>
+        <div><div class="raw-key">LDR · PIN 32 (ADC)</div><div class="raw-val" id="raw-ldr" style="color:#f0d060">—</div></div>
       </div>
       <div class="raw-card">
-        <span class="raw-icon">??</span>
-        <div><div class="raw-key">SERVER STATUS</div><div class="raw-val" id="raw-server" style="color:#b090f8">??????????????...</div></div>
+        <span class="raw-icon">☁️</span>
+        <div><div class="raw-key">SERVER STATUS</div><div class="raw-val" id="raw-server" style="color:#b090f8">กำลังเชื่อมต่อ...</div></div>
       </div>
     </div>
 
     <!-- Charts -->
     <div class="charts">
       <div class="chart-card">
-        <div class="chart-label">??????????? (%)</div>
+        <div class="chart-label">ความชื้นดิน (%)</div>
         <canvas id="chart-soil" height="70"></canvas>
       </div>
       <div class="chart-card">
-        <div class="chart-label">???????? (�C)</div>
+        <div class="chart-label">อุณหภูมิ (°C)</div>
         <canvas id="chart-temp" height="70"></canvas>
       </div>
       <div class="chart-card">
-        <div class="chart-label">????????????? (%)</div>
+        <div class="chart-label">ความชื้นอากาศ (%)</div>
         <canvas id="chart-hum" height="70"></canvas>
       </div>
       <div class="chart-card">
-        <div class="chart-label">??????????? (%)</div>
+        <div class="chart-label">ความเข้มแสง (%)</div>
         <canvas id="chart-light" height="70"></canvas>
       </div>
     </div>
@@ -244,47 +244,47 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
     <div class="ai-card">
       <div class="ai-header">
         <div>
-          <div class="ai-title">?? AI Plant Care Advisor <span style="font-size:11px;color:#7a9060;font-family:'DM Mono',monospace;font-weight:400;">powered by Gemini</span></div>
-          <div class="ai-sub" id="ai-sub">???????????????????????????????????????????</div>
+          <div class="ai-title">🌿 AI Plant Care Advisor <span style="font-size:11px;color:#7a9060;font-family:'DM Mono',monospace;font-weight:400;">powered by Gemini</span></div>
+          <div class="ai-sub" id="ai-sub">วิเคราะห์สภาพแวดล้อมและให้คำแนะนำดูแลต้นไม้</div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="ai-btn" id="ai-btn" onclick="fetchAIAdvice()">
-          ?? ???????????????
+          🔍 วิเคราะห์ตอนนี้
         </button>
         <button onclick="injectTestData()" style="padding:10px 18px;border-radius:100px;border:1px solid rgba(255,200,80,0.4);background:rgba(255,200,80,0.1);color:#f0d060;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;">
-          ?? ????? (?????????????)
+          🧪 ทดสอบ (ไม่มีเซนเซอร์)
         </button>
         </div>
       </div>
       <!-- API Key Input -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-        <span style="font-size:11px;color:#5a7040;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;">?? Gemini API Key</span>
+        <span style="font-size:11px;color:#5a7040;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;">🔑 Gemini API Key</span>
         <input id="gemini-key" type="password" placeholder="AIzaSy..."
           style="flex:1;min-width:200px;background:rgba(0,0,0,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:8px 14px;color:#c8f0a0;font-size:13px;font-family:'DM Mono',monospace;outline:none;transition:border .2s;"
           oninput="saveKey(this.value)"
           onfocus="this.style.borderColor='rgba(100,200,80,0.5)'"
           onblur="this.style.borderColor='rgba(100,200,80,0.2)'"/>
-        <button onclick="toggleKeyVisible()" title="????/????"
-          style="background:rgba(100,200,80,0.08);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:7px 12px;color:#7a9060;cursor:pointer;font-size:13px;flex-shrink:0;">??</button>
+        <button onclick="toggleKeyVisible()" title="แสดง/ซ่อน"
+          style="background:rgba(100,200,80,0.08);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:7px 12px;color:#7a9060;cursor:pointer;font-size:13px;flex-shrink:0;">👁</button>
         <span id="key-status" style="font-size:11px;font-family:'DM Mono',monospace;color:#5a7040;flex-shrink:0;"></span>
       </div>
       <div style="font-size:11px;color:#3a5025;font-family:'DM Mono',monospace;margin-bottom:16px;">
-        ??? API Key ?????? ? <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#6a9045;text-decoration:underline;">aistudio.google.com</a>
-        &nbsp;�&nbsp; Key ?????? localStorage ??????????????????????
+        รับ API Key ฟรีที่ → <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#6a9045;text-decoration:underline;">aistudio.google.com</a>
+        &nbsp;·&nbsp; Key เก็บใน localStorage ของเบราว์เซอร์เท่านั้น
       </div>
       <div id="ai-body">
-        <div class="ai-empty">??? Gemini API Key ??????????????? ??</div>
+        <div class="ai-empty">ใส่ Gemini API Key แล้วกดวิเคราะห์ 🌱</div>
       </div>
     </div>
 
     <div style="margin-top:38px;text-align:center;color:rgba(255,255,255,.1);font-size:11px;font-family:'DM Mono',monospace">
-      PlantSense IoT � Node.js + WebSocket � Railway � Gemini AI � ESP32
+      PlantSense IoT · Node.js + WebSocket · Railway · Gemini AI · ESP32
     </div>
   </div>
 </div>
 
 <script>
-// -- Config ----------------------------------------------------
+// ── Config ────────────────────────────────────────────────────
 const WS_URL = (() => {
   const proto = location.protocol === "https:" ? "wss" : "ws";
   return `${proto}://${location.host}/ws?type=dashboard`;
@@ -293,13 +293,13 @@ const WS_URL = (() => {
 const MAX_POINTS = 40;
 const RECONNECT_MS = 3000;
 
-// -- State -----------------------------------------------------
+// ── State ─────────────────────────────────────────────────────
 let sensor = null;
 let readCount = 0;
 let wsRetries = 0;
 let ws = null;
 
-// -- Chart Setup -----------------------------------------------
+// ── Chart Setup ───────────────────────────────────────────────
 function makeChart(id, color) {
   const ctx = document.getElementById(id).getContext("2d");
   return new Chart(ctx, {
@@ -356,7 +356,7 @@ function pushChart(key, value) {
   c.update("none");
 }
 
-// -- Gauge Helper ----------------------------------------------
+// ── Gauge Helper ──────────────────────────────────────────────
 function setGauge(key, value, maxVal) {
   const arc   = 245.04;
   const pct   = Math.min(value / maxVal, 1);
@@ -364,7 +364,7 @@ function setGauge(key, value, maxVal) {
   document.getElementById("arc-" + key).style.strokeDashoffset = offset;
 }
 
-// -- State Colors ----------------------------------------------
+// ── State Colors ──────────────────────────────────────────────
 const STATE_COLORS = {
   Dry:"#f09060", Moist:"#70e090", Wet:"#68c8f8",
   Dark:"#8090a0", Dim:"#c0a040", Bright:"#f0d060",
@@ -381,7 +381,7 @@ function setStateChip(key, state) {
   el.style.color = c;
 }
 
-// -- Update UI -------------------------------------------------
+// ── Update UI ─────────────────────────────────────────────────
 function updateUI(d) {
   sensor = d;
   readCount++;
@@ -393,7 +393,7 @@ function updateUI(d) {
   setGauge("light", d.light, 100);
 
   document.getElementById("val-soil").textContent  = d.soil.toFixed(1)  + "%";
-  document.getElementById("val-temp").textContent  = d.temp.toFixed(1)  + "�C";
+  document.getElementById("val-temp").textContent  = d.temp.toFixed(1)  + "°C";
   document.getElementById("val-hum").textContent   = d.hum.toFixed(1)   + "%";
   document.getElementById("val-light").textContent = d.light.toFixed(1) + "%";
 
@@ -414,9 +414,9 @@ function updateUI(d) {
   const soilADC = Math.round(925 + (100 - d.soil) / 100 * (2910 - 925));
   const ldrADC  = Math.round(4095 - d.light / 100 * 4095);
   document.getElementById("raw-soil").textContent   = `ADC = ${soilADC}  (${d.soil.toFixed(1)}%)`;
-  document.getElementById("raw-dht").textContent    = `${d.temp.toFixed(2)}�C  �  ${d.hum.toFixed(2)}%`;
+  document.getElementById("raw-dht").textContent    = `${d.temp.toFixed(2)}°C  ·  ${d.hum.toFixed(2)}%`;
   document.getElementById("raw-ldr").textContent    = `ADC = ${ldrADC}  (${d.light.toFixed(1)}%)`;
-  document.getElementById("raw-server").textContent = `?? ????????????? ${readCount} ?????`;
+  document.getElementById("raw-server").textContent = `🟢 รับข้อมูลแล้ว ${readCount} ครั้ง`;
 
   // Charts
   pushChart("soil",  d.soil);
@@ -426,8 +426,8 @@ function updateUI(d) {
 
   // Status
   const ts = d.serverTs ? new Date(d.serverTs) : new Date();
-  document.getElementById("last-update").textContent = "?????? " + ts.toLocaleTimeString("th-TH");
-  document.getElementById("read-count").textContent  = "??????????? " + readCount + " ?????";
+  document.getElementById("last-update").textContent = "อัปเดต " + ts.toLocaleTimeString("th-TH");
+  document.getElementById("read-count").textContent  = "อ่านค่าแล้ว " + readCount + " ครั้ง";
 
   // Alerts
   updateAlerts(d);
@@ -435,12 +435,12 @@ function updateUI(d) {
 
 function updateAlerts(d) {
   const list = [];
-  if (d.soilState === "Dry")   list.push({ msg:"?? ?????????? � ?????????????????????!", color:"#f09060" });
-  if (d.soilState === "Wet")   list.push({ msg:"?? ????????????? � ????????? ?????????????", color:"#68c8f8" });
-  if (d.tempState === "Hot")   list.push({ msg:"??? ??????????????? 35�C � ?????????????????????????", color:"#f07070" });
-  if (d.tempState === "Cold")  list.push({ msg:"?? ??????????????? 20�C � ????????????????????", color:"#80c8f8" });
-  if (d.lightState === "Dark") list.push({ msg:"?? ?????????? � ???????????????????????????", color:"#c0a040" });
-  if (d.hum < 30)              list.push({ msg:"?? ???????????????? � ????????????????????????????????", color:"#a0d0c0" });
+  if (d.soilState === "Dry")   list.push({ msg:"💧 ดินแห้งมาก — ควรรดน้ำต้นไม้โดยด่วน!", color:"#f09060" });
+  if (d.soilState === "Wet")   list.push({ msg:"🚿 ดินชื้นเกินไป — หยุดรดน้ำ เสี่ยงรากเน่า", color:"#68c8f8" });
+  if (d.tempState === "Hot")   list.push({ msg:"🌡️ อุณหภูมิสูงเกิน 35°C — ย้ายต้นไม้ออกจากแสงแดดตรง", color:"#f07070" });
+  if (d.tempState === "Cold")  list.push({ msg:"❄️ อุณหภูมิต่ำกว่า 20°C — ระวังต้นไม้เมืองร้อน", color:"#80c8f8" });
+  if (d.lightState === "Dark") list.push({ msg:"🌑 แสงน้อยมาก — ย้ายต้นไม้ไปที่มีแสงมากขึ้น", color:"#c0a040" });
+  if (d.hum < 30)              list.push({ msg:"💨 ความชื้นอากาศต่ำ — ควรพ่นน้ำหรือวางถาดน้ำใกล้ต้นไม้", color:"#a0d0c0" });
 
   const el = document.getElementById("alerts");
   el.innerHTML = list.map(a =>
@@ -448,13 +448,13 @@ function updateAlerts(d) {
   ).join("");
 }
 
-// -- WebSocket -------------------------------------------------
+// ── WebSocket ─────────────────────────────────────────────────
 function setStatus(state) {
   const dot  = document.getElementById("dot");
   const text = document.getElementById("status-text");
   dot.className   = "status-dot " + state;
   text.className  = "stat-text " + state + "-text";
-  const labels = { live:"LIVE", offline:"OFFLINE", connecting:"??????????????..." };
+  const labels = { live:"LIVE", offline:"OFFLINE", connecting:"กำลังเชื่อมต่อ..." };
   text.textContent = labels[state] || state;
 }
 
@@ -465,8 +465,8 @@ function connectWS() {
   ws.onopen = () => {
     wsRetries = 0;
     setStatus("live");
-    document.getElementById("raw-server").textContent = "?? WebSocket Connected";
-    console.log("[WS] Connected ?", WS_URL);
+    document.getElementById("raw-server").textContent = "🟢 WebSocket Connected";
+    console.log("[WS] Connected →", WS_URL);
   };
 
   ws.onmessage = (e) => {
@@ -477,7 +477,7 @@ function connectWS() {
 
   ws.onclose = () => {
     setStatus("offline");
-    document.getElementById("raw-server").textContent = "?? WebSocket Disconnected";
+    document.getElementById("raw-server").textContent = "🔴 WebSocket Disconnected";
     wsRetries++;
     const delay = Math.min(RECONNECT_MS * wsRetries, 15000);
     console.log(`[WS] Closed. Reconnecting in ${delay}ms...`);
@@ -492,22 +492,22 @@ function connectWS() {
 
 connectWS();
 
-// -- Test Data Injector ---------------------------------------
+// ── Test Data Injector ───────────────────────────────────────
 function injectTestData() {
   sensor = {
     soil: 45, soilState: "Moist",
     temp: 28.5, hum: 65, tempState: "Normal",
     light: 70, lightState: "Bright"
   };
-  // ?????? UI
+  // อัปเดต UI
   updateUI({...sensor, serverTs: new Date().toISOString()});
-  alert("? ??????????????????! ???????????????????????");
+  alert("✅ ใส่ข้อมูลจำลองแล้ว! กดวิเคราะห์ตอนนี้ได้เลย");
 }
 
-// -- Gemini API Key helpers ------------------------------------
+// ── Gemini API Key helpers ────────────────────────────────────
 function saveKey(val) {
   localStorage.setItem("gemini_key", val.trim());
-  document.getElementById("key-status").textContent = val.trim().length > 10 ? "? ??????????" : "";
+  document.getElementById("key-status").textContent = val.trim().length > 10 ? "✅ บันทึกแล้ว" : "";
 }
 
 function toggleKeyVisible() {
@@ -515,30 +515,32 @@ function toggleKeyVisible() {
   el.type = el.type === "password" ? "text" : "password";
 }
 
-// ???? key ??? localStorage ???????????
+// โหลด key จาก localStorage ตอนเปิดหน้า
 window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gemini_key") || "";
   if (saved) {
     document.getElementById("gemini-key").value = saved;
-    document.getElementById("key-status").textContent = "? ??????????";
+    document.getElementById("key-status").textContent = "✅ บันทึกแล้ว";
   }
 });
 function renderText(text) {
   return text
-    .replace(/#{1,3}\s*\*\*(.*?)\*\*/g,"<h4>$1</h4>")
-    .replace(/#{1,3}\s*(.*)/g,"<h4>$1</h4>")
-    .replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
-    .replace(/\*(.*?)\*/g,"<i>$1</i>")
-    .replace(/\n/g,"<br>");
+    .replace(/#{1,3}\s*\*\*(.*?)\*\*/g, "<h4 style='color:#c8f0a0;margin:10px 0 4px;font-size:14px;'>$1</h4>")
+    .replace(/#{1,3}\s+(.+)/g, "<h4 style='color:#c8f0a0;margin:10px 0 4px;font-size:14px;'>$1</h4>")
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+    .replace(/\*(.*?)\*/g, "<i>$1</i>")
+    .replace(/^---$/gm, "<hr style='border-color:rgba(100,200,80,0.2);margin:10px 0;'>")
+    .replace(/^-\s+(.+)/gm, "• $1")
+    .replace(/\n/g, "<br>");
 }
-// -- AI Advisor (Gemini) ---------------------------------------
+// ── AI Advisor (Gemini) ───────────────────────────────────────
 async function fetchAIAdvice() {
-  if (!sensor) { alert("???????????????????????"); return; }
+  if (!sensor) { alert("รอรับข้อมูลเซนเซอร์ก่อน"); return; }
 
   const apiKey = (document.getElementById("gemini-key").value || "").trim();
   if (!apiKey) {
     document.getElementById("ai-body").innerHTML =
-      `<div class="ai-result" style="color:#f0a060">?? ???????? Gemini API Key ????<br><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#8ac060">??? key ?????? aistudio.google.com</a></div>`;
+      `<div class="ai-result" style="color:#f0a060">⚠️ กรุณาใส่ Gemini API Key ก่อน<br><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#8ac060">รับ key ฟรีที่ aistudio.google.com</a></div>`;
     return;
   }
 
@@ -547,7 +549,7 @@ async function fetchAIAdvice() {
   const sub  = document.getElementById("ai-sub");
 
   btn.disabled = true;
-  btn.innerHTML = `<span style="animation:spin 1s linear infinite;display:inline-block">?</span> ??????????????...`;
+  btn.innerHTML = `<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> กำลังวิเคราะห์...`;
   body.innerHTML = `
     <div class="ai-loading">
       <div class="ai-dots">
@@ -555,10 +557,10 @@ async function fetchAIAdvice() {
         <div class="ai-dot" style="animation:bounce 1.2s .2s ease-in-out infinite"></div>
         <div class="ai-dot" style="animation:bounce 1.2s .4s ease-in-out infinite"></div>
       </div>
-      <div class="ai-loading-text">Gemini ????????????????????????????...</div>
+      <div class="ai-loading-text">Gemini กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
     </div>`;
 
-  const prompt = `????????????????????????????????????????????? ??????????????: ???:${sensor.soil.toFixed(0)}% (${sensor.soilState}) ????????:${sensor.temp.toFixed(1)}C (${sensor.tempState}) ????????:${sensor.hum.toFixed(0)}% ???:${sensor.light.toFixed(0)}% (${sensor.lightState}) ???????? 6 ??????: 1.???????? 2.????????????? 3.???????? 4.??? 5.???????? 6.??????????????24?? ?????????? ??? emoji`;
+  const prompt = `วิเคราะห์สภาพต้นไม้และแนะนำการดูแลเป็นภาษาไทย ข้อมูลเซนเซอร์: ดิน:${sensor.soil.toFixed(0)}% (${sensor.soilState}) อุณหภูมิ:${sensor.temp.toFixed(1)}C (${sensor.tempState}) ความชื้น:${sensor.hum.toFixed(0)}% แสง:${sensor.light.toFixed(0)}% (${sensor.lightState}) กรุณาตอบ 6 หัวข้อ: 1.สรุปสภาพ 2.ปัญหาเร่งด่วน 3.การรดน้ำ 4.แสง 5.อุณหภูมิ 6.สิ่งที่ควรทำใน24ชม ตอบภาษาไทย ใช้ emoji`;
 
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
@@ -568,36 +570,36 @@ async function fetchAIAdvice() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 8192, temperature: 0.7 }
+        generationConfig: { maxOutputTokens: 3000, temperature: 0.7 }
       })
     });
 
     if (!res.ok) {
       const err = await res.json();
       const msg = err?.error?.message || `HTTP ${res.status}`;
-      // API Key ???
+      // API Key ผิด
       if (res.status === 400 || res.status === 403) {
-        body.innerHTML = `<div class="ai-result" style="color:#f07070">? API Key ??????????: ${msg}</div>`;
+        body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ API Key ไม่ถูกต้อง: ${msg}</div>`;
       } else {
-        body.innerHTML = `<div class="ai-result" style="color:#f07070">? Gemini Error: ${msg}</div>`;
+        body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ Gemini Error: ${msg}</div>`;
       }
       btn.disabled = false;
-      btn.innerHTML = "?? ???????????????";
+      btn.innerHTML = "🔍 วิเคราะห์ตอนนี้";
       return;
     }
 
     const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "?????????????????????";
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "ไม่สามารถดึงข้อมูลได้";
     const now  = new Date().toLocaleTimeString("th-TH");
     body.innerHTML = `<div class="ai-result">${renderText(text)}</div>`;
-    sub.textContent = `Gemini � ?????? ${now}`;
+    sub.textContent = `Gemini · อัปเดต ${now}`;
 
   } catch (err) {
-    body.innerHTML = `<div class="ai-result" style="color:#f07070">? ????????? Gemini ??????: ${err.message}<br><span style="font-size:12px;opacity:.7;">??????? API Key ???????????????????????????</span></div>`;
+    body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ เชื่อมต่อ Gemini ไม่ได้: ${err.message}<br><span style="font-size:12px;opacity:.7;">ตรวจสอบ API Key และการเชื่อมต่ออินเทอร์เน็ต</span></div>`;
   }
 
   btn.disabled = false;
-  btn.innerHTML = "?? ???????????????";
+  btn.innerHTML = "🔍 วิเคราะห์ตอนนี้";
 }
 </script>
 </body>
