@@ -82,8 +82,34 @@ wss.on("connection", (ws, req) => {
   });
 });
 
-// ── Health Check API ──────────────────────────────────────────
+// ── HTTP POST endpoint สำหรับ ESP32 ─────────────────────────
 app.use(express.json());
+
+app.post("/api/data", (req, res) => {
+  const token = req.headers["x-token"] || req.query.token || "";
+  const ESP32_TOKEN = process.env.ESP32_TOKEN || "plantsense2024";
+
+  if (token !== ESP32_TOKEN) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  const data = req.body;
+  if (!data || typeof data.temp === "undefined") {
+    return res.status(400).json({ error: "Invalid data" });
+  }
+
+  data.serverTs = new Date().toISOString();
+  latestSensorData = data;
+
+  // Broadcast ไปยัง dashboard ทุกตัว
+  const payload = JSON.stringify({ type: "sensor", data });
+  for (const dash of clients.dashboard) {
+    if (dash.readyState === WebSocket.OPEN) dash.send(payload);
+  }
+
+  console.log(`[POST] soil=${data.soil}% temp=${data.temp}°C hum=${data.hum}% light=${data.light}%`);
+  res.json({ ok: true, ts: data.serverTs });
+});
 
 app.get("/api/health", (_, res) => res.json({
   status:  "ok",

@@ -26,7 +26,7 @@ using namespace websockets;
 
 // ── Railway Server ───────────────────────────────────────────────
 //  เปลี่ยน your-app.railway.app เป็น URL จริงจาก Railway
-#define SERVER_HOST   "your-app.railway.app"
+#define SERVER_HOST   "garden-bot-production.up.railway.app"
 #define SERVER_PATH   "/ws?type=esp32&token=plantsense2024"
 //  ถ้า Railway ให้ https → ใช้ WSS (port 443)
 #define USE_SSL       true
@@ -119,22 +119,18 @@ void onWSEvent(WebsocketsEvent event, String data) {
 //  WebSocket Connect
 // ================================================================
 void connectWebSocket() {
-  if (WiFi.status() != WL_CONNECTED) return;
+if (WiFi.status() != WL_CONNECTED) return;
 
-  Serial.print("[WS] Connecting to ");
-  Serial.println(String(USE_SSL ? "wss" : "ws") + "://" + SERVER_HOST + SERVER_PATH);
+  Serial.print("[WS] Connecting to wss://");
+  Serial.println(String(SERVER_HOST) + SERVER_PATH);
 
   wsClient.onMessage(onWSMessage);
   wsClient.onEvent(onWSEvent);
 
-  bool ok;
-  if (USE_SSL) {
-    // Railway ใช้ HTTPS → WSS
-    wsClient.setInsecure();   // ข้าม cert check (ปลอดภัยพอสำหรับ IoT)
-    ok = wsClient.connectSSL(SERVER_HOST, SERVER_PORT, SERVER_PATH);
-  } else {
-    ok = wsClient.connect(SERVER_HOST, SERVER_PORT, SERVER_PATH);
-  }
+  // ── ต้อง setInsecure ก่อน connect ──
+  wsClient.setInsecure();
+
+  bool ok = wsClient.connect(SERVER_HOST, SERVER_PORT, SERVER_PATH);
 
   if (ok) {
     Serial.println("[WS] Handshake OK");
