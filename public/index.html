@@ -551,12 +551,15 @@ async function fetchAIAdvice() {
       <div class="ai-loading-text">Gemini กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
     </div>`;
 
-  const prompt = `คุณเป็นผู้เชี่ยวชาญด้านการดูแลต้นไม้ในร่ม ข้อมูลเซนเซอร์ IoT ปัจจุบัน:
-- ความชื้นดิน: ${sensor.soil.toFixed(1)}% (สถานะ: ${sensor.soilState})
-- อุณหภูมิ: ${sensor.temp.toFixed(1)}°C (สถานะ: ${sensor.tempState})
-- ความชื้นอากาศ: ${sensor.hum.toFixed(1)}%
-- ความเข้มแสง: ${sensor.light.toFixed(1)}% (สถานะ: ${sensor.lightState})
+  const prompt = `ข้อมูลเซนเซอร์ต้นไม้:
+- ดิน:${sensor.soil.toFixed(0)}%  (${sensor.soilState})
+- อุณหภูมิ:${sensor.temp.toFixed(1)}°C (${sensor.tempState})
+- ความชื้นอากาศ:${sensor.hum.toFixed(0)}%
+- แสง:${sensor.light.toFixed(0)}% (${sensor.lightState})
 
+ 
+
+วิเคราะห์และแนะนำการดูแลต้นไม้เป็นภาษาไทย ให้ครบ 6 หัวข้อ: สรุปสภาพ, ปัญหาเร่งด่วน, การรดน้ำ, แสง, อุณหภูมิ, สิ่งที่ควรทำใน 24 ชม`;
 กรุณาวิเคราะห์และให้คำแนะนำ:
 1. 🌱 สรุปสภาพแวดล้อมโดยรวม
 2. ⚠️ ปัญหาที่ต้องแก้ไขเร่งด่วน (ถ้ามี)
@@ -567,7 +570,7 @@ async function fetchAIAdvice() {
 
 ตอบเป็นภาษาไทย กระชับ ชัดเจน ใช้ emoji`;
 
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
 
   try {
     const res = await fetch(GEMINI_URL, {
@@ -596,7 +599,7 @@ async function fetchAIAdvice() {
     const data = await res.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "ไม่สามารถดึงข้อมูลได้";
     const now  = new Date().toLocaleTimeString("th-TH");
-    body.innerHTML = `<div class="ai-result">${text.replace(/\*\*(.*?)\*\*/g, "<b>`$1</b>").replace(/\n/g, "<br>")}</div>`;
+    body.innerHTML = `<div class="ai-result">${text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>").replace(/\n/g, '<br>')}</div>`;
     sub.textContent = `Gemini · อัปเดต ${now}`;
 
   } catch (err) {
