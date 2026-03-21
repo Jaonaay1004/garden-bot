@@ -247,9 +247,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
           <div class="ai-title">🌿 AI Plant Care Advisor <span style="font-size:11px;color:#7a9060;font-family:'DM Mono',monospace;font-weight:400;">powered by Gemini</span></div>
           <div class="ai-sub" id="ai-sub">วิเคราะห์สภาพแวดล้อมและให้คำแนะนำดูแลต้นไม้</div>
         </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="ai-btn" id="ai-btn" onclick="fetchAIAdvice()">
           🔍 วิเคราะห์ตอนนี้
         </button>
+        <button onclick="injectTestData()" style="padding:10px 18px;border-radius:100px;border:1px solid rgba(255,200,80,0.4);background:rgba(255,200,80,0.1);color:#f0d060;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;">
+          🧪 ทดสอบ (ไม่มีเซนเซอร์)
+        </button>
+        </div>
       </div>
       <!-- API Key Input -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
@@ -487,6 +492,18 @@ function connectWS() {
 
 connectWS();
 
+// ── Test Data Injector ───────────────────────────────────────
+function injectTestData() {
+  sensor = {
+    soil: 45, soilState: "Moist",
+    temp: 28.5, hum: 65, tempState: "Normal",
+    light: 70, lightState: "Bright"
+  };
+  // อัปเดต UI
+  updateUI({...sensor, serverTs: new Date().toISOString()});
+  alert("✅ ใส่ข้อมูลจำลองแล้ว! กดวิเคราะห์ตอนนี้ได้เลย");
+}
+
 // ── Gemini API Key helpers ────────────────────────────────────
 function saveKey(val) {
   localStorage.setItem("gemini_key", val.trim());
@@ -550,7 +567,7 @@ async function fetchAIAdvice() {
 
 ตอบเป็นภาษาไทย กระชับ ชัดเจน ใช้ emoji`;
 
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
   try {
     const res = await fetch(GEMINI_URL, {
