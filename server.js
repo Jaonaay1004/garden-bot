@@ -130,13 +130,12 @@ app.get("*", (_, res) => res.sendFile(path.join(__dirname, "public", "index.html
 
 // ── Start Server ──────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`
-  ╔══════════════════════════════════════════╗
-  ║   🌱  PlantSense IoT Server Started     ║
-  ║   Port  : ${PORT.toString().padEnd(32)}║
-  ║   WS    : ws://localhost:${PORT}/ws           ║
-  ╚══════════════════════════════════════════╝
-  ESP32_TOKEN = ${process.env.ESP32_TOKEN || "plantsense2024 (default)"}
-  `);
-});
+  server.listen(PORT, () => {
+    console.log(`
+    ╔══════════════════════════════════════════╗
+    ║   🌱  PlantSense IoT Server Started     ║
+    ║   Port  : ${PORT.toString().padEnd(32)}║
+    ║   WS    : ws://localhost:${PORT}/ws           ║
+    ╚══════════════════════════════════════════╝
+    ESP32_TOKEN = ${process.env.ESP32_TOKEN || "plantsense2024 (default)"}`);
+  });
