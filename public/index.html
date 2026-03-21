@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -271,6 +271,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
       <div style="font-size:11px;color:#3a5025;font-family:'DM Mono',monospace;margin-bottom:16px;">
         รับ API Key ฟรีที่ → <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#6a9045;text-decoration:underline;">aistudio.google.com</a>
         &nbsp;·&nbsp; Key เก็บใน localStorage ของเบราว์เซอร์เท่านั้น
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:#5a7040;font-family:'DM Mono',monospace;white-space:nowrap;">🌿 ชนิดต้นไม้</span>
+        <input id="plant-name" type="text" placeholder="เช่น กระบองเพชร, มอนสเตอร่า, กุหลาบ..." style="flex:1;min-width:180px;background:rgba(0,0,0,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:8px 14px;color:#c8f0a0;font-size:13px;font-family:'DM Mono',monospace;outline:none;" oninput="localStorage.setItem('plant_name',this.value)"/>
+        <select id="plant-type" style="background:rgba(0,0,0,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:8px 14px;color:#c8f0a0;font-size:13px;font-family:'DM Mono',monospace;outline:none;cursor:pointer;">
+          <option value="">-- เลือกประเภท --</option>
+          <option value="ไม้อวบน้ำ/กระบองเพชร">🌵 ไม้อวบน้ำ / กระบองเพชร</option>
+          <option value="ไม้ใบในร่ม">🌿 ไม้ใบในร่ม</option>
+          <option value="ไม้ดอก">🌸 ไม้ดอก</option>
+          <option value="ไม้ผล">🍋 ไม้ผล</option>
+          <option value="ผักสวนครัว">🥬 ผักสวนครัว</option>
+          <option value="สมุนไพร">🌱 สมุนไพร</option>
+        </select>
       </div>
       <div id="ai-body">
         <div class="ai-empty">ใส่ Gemini API Key แล้วกดวิเคราะห์ 🌱</div>
