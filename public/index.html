@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🌱 PlantSense IoT Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:        #0a1206;
+  --bg2:       #111a08;
+  --surface:   rgba(255,255,255,0.035);
+  --border:    rgba(255,255,255,0.07);
+  --text:      #e8f0d8;
+  --muted:     #6a8050;
+  --green:     #70e090;
+  --orange:    #f09060;
+  --blue:      #68c8f8;
+  --yellow:    #f0d060;
+  --purple:    #b090f8;
+  --red:       #f07070;
+  --soil-c:    #70e090;
+  --temp-c:    #f09060;
+  --hum-c:     #68c8f8;
+  --light-c:   #f0d060;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans Thai',sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
+
+/* ── Layout ── */
+.page{min-height:100vh;background:radial-gradient(ellipse at 15% 10%,#182e08 0%,#0a1206 50%,#060b04 100%);}
+.header{position:sticky;top:0;z-index:100;padding:18px 28px;background:rgba(6,10,4,0.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo h1{font-family:'Playfair Display',serif;font-size:22px;color:var(--green);letter-spacing:.02em;}
+.logo sub{display:block;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;}
+.main{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
+
+/* ── Status bar ── */
+.status-bar{display:flex;align-items:center;gap:14px;padding:9px 18px;background:rgba(0,0,0,0.35);border-radius:100px;border:1px solid var(--border);flex-wrap:wrap;}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .4s;}
+.status-dot.live{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s ease-in-out infinite;}
+.status-dot.offline{background:var(--red);box-shadow:0 0 8px var(--red);}
+.status-dot.connecting{background:var(--yellow);box-shadow:0 0 8px var(--yellow);animation:pulse 1s ease-in-out infinite;}
+.sep{width:1px;height:14px;background:var(--border);}
+.stat-text{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+.stat-live{font-size:12px;font-weight:600;font-family:'DM Mono',monospace;}
+.live-text{color:var(--green);}
+.offline-text{color:var(--red);}
+.connecting-text{color:var(--yellow);}
+
+/* ── Alerts ── */
+#alerts{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.alert-item{padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;animation:slideIn .4s ease;}
+
+/* ── Gauge grid ── */
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:22px;}
+.gauge-card{background:linear-gradient(145deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:22px;padding:22px 16px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;backdrop-filter:blur(10px);position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;cursor:default;}
+.gauge-card:hover{transform:translateY(-4px);}
+.gauge-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:130px;height:130px;border-radius:50%;pointer-events:none;}
+.gauge-label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.gauge-state{margin-top:4px;display:inline-block;padding:3px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.08em;}
+
+/* ── Raw values ── */
+.raw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:22px;}
+.raw-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:14px;}
+.raw-icon{font-size:18px;}
+.raw-key{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.1em;}
+.raw-val{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;margin-top:2px;}
+
+/* ── Charts ── */
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:22px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 18px;}
+.chart-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:10px;}
+
+/* ── AI Advisor ── */
+.ai-card{background:linear-gradient(135deg,rgba(30,55,20,.55),rgba(15,25,10,.7));border:1px solid rgba(100,200,80,.2);border-radius:24px;padding:26px;backdrop-filter:blur(12px);}
+.ai-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:14px;}
+.ai-title{font-family:'Playfair Display',serif;font-size:18px;color:#c8f0a0;}
+.ai-sub{font-size:11px;color:#5a7040;margin-top:4px;font-family:'DM Mono',monospace;}
+.ai-btn{padding:10px 22px;border-radius:100px;border:1px solid rgba(100,200,80,.4);background:rgba(100,200,80,.12);color:#c8f0a0;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:.05em;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.ai-btn:hover{background:rgba(100,200,80,.22);}
+.ai-btn:disabled{opacity:.5;cursor:not-allowed;}
+.ai-empty{text-align:center;padding:38px 0;color:#4a6030;font-size:14px;font-family:'DM Mono',monospace;}
+.ai-loading{text-align:center;padding:28px 0;}
+.ai-dots{display:flex;justify-content:center;gap:8px;margin-bottom:12px;}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#80c060;}
+.ai-loading-text{color:#6a8050;font-size:13px;font-family:'DM Mono',monospace;}
+.ai-result{background:rgba(0,0,0,.25);border-radius:14px;padding:18px 22px;color:#d0e8b8;font-size:14px;line-height:1.9;white-space:pre-wrap;border-left:3px solid rgba(100,200,80,.5);}
+
+/* ── Decorative leaves ── */
+.leaf{position:fixed;opacity:.035;pointer-events:none;z-index:0;font-size:60px;animation:floatLeaf 4s ease-in-out infinite;}
+
+/* ── Animations ── */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes floatLeaf{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-14px) rotate(6deg)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Leaves -->
+  <div class="leaf" style="top:8%;right:-1%;animation-delay:0s">🌿</div>
+  <div class="leaf" style="top:28%;right:0%;animation-delay:.8s;font-size:48px">🌱</div>
+  <div class="leaf" style="top:55%;right:-1%;animation-delay:1.6s;font-size:72px">🍃</div>
+  <div class="leaf" style="top:75%;right:0%;animation-delay:.4s;font-size:44px">🌿</div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <span style="font-size:26px">🌱</span>
+      <div>
+        <h1>PlantSense IoT</h1>
+        <sub>ESP32 · DHT11 · Capacitive Soil · LDR · WebSocket</sub>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div id="dot" class="status-dot connecting"></div>
+      <span id="status-text" class="stat-text connecting-text">กำลังเชื่อมต่อ...</span>
+      <div class="sep"></div>
+      <span class="stat-text" id="last-update">ยังไม่มีข้อมูล</span>
+      <div class="sep"></div>
+      <span class="stat-text" id="read-count">อ่านค่า 0 ครั้ง</span>
+      <div class="sep"></div>
+      <span class="stat-text">Interval: 4s</span>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- Alerts -->
+    <div id="alerts"></div>
+
+    <!-- Gauges -->
+    <div class="gauges">
+      <div class="gauge-card" id="card-soil">
+        <div class="gauge-glow" id="glow-soil" style="background:radial-gradient(circle,#70e09015 0%,transparent 70%)"></div>
+        <svg width="130" height="130" viewBox="0 0 140 140" id="svg-soil">
+          <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(135 70 70)"/>
+          <circle cx="70" cy="70" r="52" fill="none" stroke="#70e090" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
+            id="arc-soil" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #70e090)"/>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#70e090">💧</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-soil">—%</text>
+        </svg>
+        <div class="gauge-label">Soil Moisture</div>
+        <div class="gauge-state" id="state-soil" style="background:#70e09022;border:1px solid #70e09055;color:#70e090">—</div>
+      </div>
+
+      <div class="gauge-card" id="card-temp">
+        <div class="gauge-glow" style="background:radial-gradient(circle,#f0906015 0%,transparent 70%)"></div>
+        <svg width="130" height="130" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(135 70 70)"/>
+          <circle cx="70" cy="70" r="52" fill="none" stroke="#f09060" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
+            id="arc-temp" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #f09060)"/>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#f09060">🌡️</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-temp">—°C</text>
+        </svg>
+        <div class="gauge-label">Temperature</div>
+        <div class="gauge-state" id="state-temp" style="background:#f0906022;border:1px solid #f0906055;color:#f09060">—</div>
+      </div>
+
+      <div class="gauge-card" id="card-hum">
+        <div class="gauge-glow" style="background:radial-gradient(circle,#68c8f815 0%,transparent 70%)"></div>
+        <svg width="130" height="130" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(135 70 70)"/>
+          <circle cx="70" cy="70" r="52" fill="none" stroke="#68c8f8" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
+            id="arc-hum" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #68c8f8)"/>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#68c8f8">💦</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-hum">—%</text>
+        </svg>
+        <div class="gauge-label">Humidity</div>
+        <div class="gauge-state" id="state-hum" style="background:#68c8f822;border:1px solid #68c8f855;color:#68c8f8">—</div>
+      </div>
+
+      <div class="gauge-card" id="card-light">
+        <div class="gauge-glow" style="background:radial-gradient(circle,#f0d06015 0%,transparent 70%)"></div>
+        <svg width="130" height="130" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(135 70 70)"/>
+          <circle cx="70" cy="70" r="52" fill="none" stroke="#f0d060" stroke-width="10"
+            stroke-dasharray="245.04 326.73" stroke-dashoffset="245.04" stroke-linecap="round" transform="rotate(135 70 70)"
+            id="arc-light" style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px #f0d060)"/>
+          <text x="70" y="62" text-anchor="middle" font-size="20" fill="#f0d060">☀️</text>
+          <text x="70" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#e8f0d8" font-family="'DM Mono',monospace" id="val-light">—%</text>
+        </svg>
+        <div class="gauge-label">Light Level</div>
+        <div class="gauge-state" id="state-light" style="background:#f0d06022;border:1px solid #f0d06055;color:#f0d060">—</div>
+      </div>
+    </div>
+
+    <!-- Raw Values -->
+    <div class="raw-grid">
+      <div class="raw-card">
+        <span class="raw-icon">🌿</span>
+        <div><div class="raw-key">SOIL · PIN 34 (ADC)</div><div class="raw-val" id="raw-soil" style="color:#70e090">—</div></div>
+      </div>
+      <div class="raw-card">
+        <span class="raw-icon">🌡️</span>
+        <div><div class="raw-key">DHT11 · PIN 25</div><div class="raw-val" id="raw-dht" style="color:#f09060">—</div></div>
+      </div>
+      <div class="raw-card">
+        <span class="raw-icon">☀️</span>
+        <div><div class="raw-key">LDR · PIN 32 (ADC)</div><div class="raw-val" id="raw-ldr" style="color:#f0d060">—</div></div>
+      </div>
+      <div class="raw-card">
+        <span class="raw-icon">☁️</span>
+        <div><div class="raw-key">SERVER STATUS</div><div class="raw-val" id="raw-server" style="color:#b090f8">กำลังเชื่อมต่อ...</div></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="chart-card">
+        <div class="chart-label">ความชื้นดิน (%)</div>
+        <canvas id="chart-soil" height="70"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">อุณหภูมิ (°C)</div>
+        <canvas id="chart-temp" height="70"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">ความชื้นอากาศ (%)</div>
+        <canvas id="chart-hum" height="70"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">ความเข้มแสง (%)</div>
+        <canvas id="chart-light" height="70"></canvas>
+      </div>
+    </div>
+
+    <!-- AI Advisor -->
+    <div class="ai-card">
+      <div class="ai-header">
+        <div>
+          <div class="ai-title">🌿 AI Plant Care Advisor</div>
+          <div class="ai-sub" id="ai-sub">วิเคราะห์สภาพแวดล้อมและให้คำแนะนำดูแลต้นไม้</div>
+        </div>
+        <button class="ai-btn" id="ai-btn" onclick="fetchAIAdvice()">
+          🔍 วิเคราะห์ตอนนี้
+        </button>
+      </div>
+      <div id="ai-body">
+        <div class="ai-empty">กดปุ่มวิเคราะห์เพื่อรับคำแนะนำจาก AI 🌱</div>
+      </div>
+    </div>
+
+    <div style="margin-top:38px;text-align:center;color:rgba(255,255,255,.1);font-size:11px;font-family:'DM Mono',monospace">
+      PlantSense IoT · Node.js + WebSocket · Railway · Claude AI · ESP32
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────
+const WS_URL = (() => {
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  return `${proto}://${location.host}/ws?type=dashboard`;
+})();
+
+const MAX_POINTS = 40;
+const RECONNECT_MS = 3000;
+
+// ── State ─────────────────────────────────────────────────────
+let sensor = null;
+let readCount = 0;
+let wsRetries = 0;
+let ws = null;
+
+// ── Chart Setup ───────────────────────────────────────────────
+function makeChart(id, color) {
+  const ctx = document.getElementById(id).getContext("2d");
+  return new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [{
+        data: [],
+        borderColor: color,
+        backgroundColor: color + "25",
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+      }]
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: "#1a2410",
+        borderColor: color + "55",
+        borderWidth: 1,
+        titleColor: "#a0b880",
+        bodyColor: color,
+        callbacks: { title: () => "" }
+      }},
+      scales: {
+        x: { display: false },
+        y: {
+          ticks: { color: "#6a8050", font: { size: 9, family: "'DM Mono'" } },
+          grid: { color: "rgba(255,255,255,0.04)" },
+        }
+      }
+    }
+  });
+}
+
+const charts = {
+  soil:  makeChart("chart-soil",  "#70e090"),
+  temp:  makeChart("chart-temp",  "#f09060"),
+  hum:   makeChart("chart-hum",   "#68c8f8"),
+  light: makeChart("chart-light", "#f0d060"),
+};
+
+function pushChart(key, value) {
+  const c = charts[key];
+  c.data.labels.push("");
+  c.data.datasets[0].data.push(value);
+  if (c.data.labels.length > MAX_POINTS) {
+    c.data.labels.shift();
+    c.data.datasets[0].data.shift();
+  }
+  c.update("none");
+}
+
+// ── Gauge Helper ──────────────────────────────────────────────
+function setGauge(key, value, maxVal) {
+  const arc   = 245.04;
+  const pct   = Math.min(value / maxVal, 1);
+  const offset = arc - pct * arc;
+  document.getElementById("arc-" + key).style.strokeDashoffset = offset;
+}
+
+// ── State Colors ──────────────────────────────────────────────
+const STATE_COLORS = {
+  Dry:"#f09060", Moist:"#70e090", Wet:"#68c8f8",
+  Dark:"#8090a0", Dim:"#c0a040", Bright:"#f0d060",
+  Cold:"#80c8f8", Normal:"#70e090", Hot:"#f07070",
+  Low:"#a0d0c0", OK:"#70e090", High:"#f09060",
+};
+
+function setStateChip(key, state) {
+  const el = document.getElementById("state-" + key);
+  const c  = STATE_COLORS[state] || "#a09880";
+  el.textContent = state;
+  el.style.background = c + "22";
+  el.style.border = `1px solid ${c}55`;
+  el.style.color = c;
+}
+
+// ── Update UI ─────────────────────────────────────────────────
+function updateUI(d) {
+  sensor = d;
+  readCount++;
+
+  // Gauges
+  setGauge("soil",  d.soil,  100);
+  setGauge("temp",  d.temp,  60);
+  setGauge("hum",   d.hum,   100);
+  setGauge("light", d.light, 100);
+
+  document.getElementById("val-soil").textContent  = d.soil.toFixed(1)  + "%";
+  document.getElementById("val-temp").textContent  = d.temp.toFixed(1)  + "°C";
+  document.getElementById("val-hum").textContent   = d.hum.toFixed(1)   + "%";
+  document.getElementById("val-light").textContent = d.light.toFixed(1) + "%";
+
+  // States
+  const humState = d.hum < 30 ? "Low" : d.hum < 70 ? "OK" : "High";
+  setStateChip("soil",  d.soilState);
+  setStateChip("temp",  d.tempState);
+  setStateChip("hum",   humState);
+  setStateChip("light", d.lightState);
+
+  // Card hover glow
+  document.getElementById("card-soil").style.boxShadow  = `0 16px 50px #70e09020`;
+  document.getElementById("card-temp").style.boxShadow  = `0 16px 50px #f0906020`;
+  document.getElementById("card-hum").style.boxShadow   = `0 16px 50px #68c8f820`;
+  document.getElementById("card-light").style.boxShadow = `0 16px 50px #f0d06020`;
+
+  // Raw values
+  const soilADC = Math.round(925 + (100 - d.soil) / 100 * (2910 - 925));
+  const ldrADC  = Math.round(4095 - d.light / 100 * 4095);
+  document.getElementById("raw-soil").textContent   = `ADC = ${soilADC}  (${d.soil.toFixed(1)}%)`;
+  document.getElementById("raw-dht").textContent    = `${d.temp.toFixed(2)}°C  ·  ${d.hum.toFixed(2)}%`;
+  document.getElementById("raw-ldr").textContent    = `ADC = ${ldrADC}  (${d.light.toFixed(1)}%)`;
+  document.getElementById("raw-server").textContent = `🟢 รับข้อมูลแล้ว ${readCount} ครั้ง`;
+
+  // Charts
+  pushChart("soil",  d.soil);
+  pushChart("temp",  d.temp);
+  pushChart("hum",   d.hum);
+  pushChart("light", d.light);
+
+  // Status
+  const ts = d.serverTs ? new Date(d.serverTs) : new Date();
+  document.getElementById("last-update").textContent = "อัปเดต " + ts.toLocaleTimeString("th-TH");
+  document.getElementById("read-count").textContent  = "อ่านค่าแล้ว " + readCount + " ครั้ง";
+
+  // Alerts
+  updateAlerts(d);
+}
+
+function updateAlerts(d) {
+  const list = [];
+  if (d.soilState === "Dry")   list.push({ msg:"💧 ดินแห้งมาก — ควรรดน้ำต้นไม้โดยด่วน!", color:"#f09060" });
+  if (d.soilState === "Wet")   list.push({ msg:"🚿 ดินชื้นเกินไป — หยุดรดน้ำ เสี่ยงรากเน่า", color:"#68c8f8" });
+  if (d.tempState === "Hot")   list.push({ msg:"🌡️ อุณหภูมิสูงเกิน 35°C — ย้ายต้นไม้ออกจากแสงแดดตรง", color:"#f07070" });
+  if (d.tempState === "Cold")  list.push({ msg:"❄️ อุณหภูมิต่ำกว่า 20°C — ระวังต้นไม้เมืองร้อน", color:"#80c8f8" });
+  if (d.lightState === "Dark") list.push({ msg:"🌑 แสงน้อยมาก — ย้ายต้นไม้ไปที่มีแสงมากขึ้น", color:"#c0a040" });
+  if (d.hum < 30)              list.push({ msg:"💨 ความชื้นอากาศต่ำ — ควรพ่นน้ำหรือวางถาดน้ำใกล้ต้นไม้", color:"#a0d0c0" });
+
+  const el = document.getElementById("alerts");
+  el.innerHTML = list.map(a =>
+    `<div class="alert-item" style="background:${a.color}18;border:1px solid ${a.color}44;color:${a.color}">${a.msg}</div>`
+  ).join("");
+}
+
+// ── WebSocket ─────────────────────────────────────────────────
+function setStatus(state) {
+  const dot  = document.getElementById("dot");
+  const text = document.getElementById("status-text");
+  dot.className   = "status-dot " + state;
+  text.className  = "stat-text " + state + "-text";
+  const labels = { live:"LIVE", offline:"OFFLINE", connecting:"กำลังเชื่อมต่อ..." };
+  text.textContent = labels[state] || state;
+}
+
+function connectWS() {
+  setStatus("connecting");
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    wsRetries = 0;
+    setStatus("live");
+    document.getElementById("raw-server").textContent = "🟢 WebSocket Connected";
+    console.log("[WS] Connected →", WS_URL);
+  };
+
+  ws.onmessage = (e) => {
+    let msg;
+    try { msg = JSON.parse(e.data); } catch { return; }
+    if (msg.type === "sensor" && msg.data) updateUI(msg.data);
+  };
+
+  ws.onclose = () => {
+    setStatus("offline");
+    document.getElementById("raw-server").textContent = "🔴 WebSocket Disconnected";
+    wsRetries++;
+    const delay = Math.min(RECONNECT_MS * wsRetries, 15000);
+    console.log(`[WS] Closed. Reconnecting in ${delay}ms...`);
+    setTimeout(connectWS, delay);
+  };
+
+  ws.onerror = () => {
+    setStatus("offline");
+    ws.close();
+  };
+}
+
+connectWS();
+
+// ── AI Advisor ────────────────────────────────────────────────
+async function fetchAIAdvice() {
+  if (!sensor) { alert("รอรับข้อมูลเซนเซอร์ก่อน"); return; }
+  const btn  = document.getElementById("ai-btn");
+  const body = document.getElementById("ai-body");
+  const sub  = document.getElementById("ai-sub");
+  btn.disabled = true;
+  btn.innerHTML = `<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> กำลังวิเคราะห์...`;
+  body.innerHTML = `
+    <div class="ai-loading">
+      <div class="ai-dots">
+        <div class="ai-dot" style="animation:bounce 1.2s 0s ease-in-out infinite"></div>
+        <div class="ai-dot" style="animation:bounce 1.2s .2s ease-in-out infinite"></div>
+        <div class="ai-dot" style="animation:bounce 1.2s .4s ease-in-out infinite"></div>
+      </div>
+      <div class="ai-loading-text">AI กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
+    </div>`;
+
+  const prompt = `คุณเป็นผู้เชี่ยวชาญด้านการดูแลต้นไม้ในร่ม ข้อมูลเซนเซอร์ IoT ปัจจุบัน:
+- ความชื้นดิน: ${sensor.soil.toFixed(1)}% (สถานะ: ${sensor.soilState})
+- อุณหภูมิ: ${sensor.temp.toFixed(1)}°C (สถานะ: ${sensor.tempState})
+- ความชื้นอากาศ: ${sensor.hum.toFixed(1)}%
+- ความเข้มแสง: ${sensor.light.toFixed(1)}% (สถานะ: ${sensor.lightState})
+
+กรุณาวิเคราะห์และให้คำแนะนำ:
+1. 🌱 สรุปสภาพแวดล้อมโดยรวม
+2. ⚠️ ปัญหาที่ต้องแก้ไขเร่งด่วน (ถ้ามี)
+3. 💧 คำแนะนำการรดน้ำ
+4. ☀️ คำแนะนำเรื่องแสง
+5. 🌡️ คำแนะนำเรื่องอุณหภูมิ/ความชื้น
+6. ✅ สิ่งที่ควรทำภายใน 24 ชั่วโมง
+
+ตอบเป็นภาษาไทย กระชับ ชัดเจน ใช้ emoji`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text || "").join("") || "ไม่สามารถดึงข้อมูลได้";
+    const now  = new Date().toLocaleTimeString("th-TH");
+    body.innerHTML = `<div class="ai-result">${text}</div>`;
+    sub.textContent = `อัปเดต ${now}`;
+  } catch (err) {
+    body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ เชื่อมต่อ AI ไม่ได้: ${err.message}</div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = `🔍 วิเคราะห์ตอนนี้`;
+}
+</script>
+</body>
+</html>
