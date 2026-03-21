@@ -596,7 +596,7 @@ async function fetchAIAdvice() {
     const data = await res.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "ไม่สามารถดึงข้อมูลได้";
     const now  = new Date().toLocaleTimeString("th-TH");
-    body.innerHTML = `<div class="ai-result">${text.replace(/\n/g, "<br>")}</div>`;
+    body.innerHTML = `<div class="ai-result">${text.replace(/\*\*(.*?)\*\*/g, "<b>`$1</b>").replace(/\n/g, "<br>")}</div>`;
     sub.textContent = `Gemini · อัปเดต ${now}`;
 
   } catch (err) {
