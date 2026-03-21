@@ -240,7 +240,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
       </div>
     </div>
 
-    <!-- AI Advisor -->
+    <!-- AI Advisor v202603211831 -->
     <div class="ai-card">
       <div class="ai-header">
         <div>
@@ -272,8 +272,30 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
         รับ API Key ฟรีที่ → <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#6a9045;text-decoration:underline;">aistudio.google.com</a>
         &nbsp;·&nbsp; Key เก็บใน localStorage ของเบราว์เซอร์เท่านั้น
       </div>
+      <!-- Plant Type Input -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:#5a7040;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;">🌿 ชนิดต้นไม้</span>
+        <input id="plant-name" type="text" placeholder="เช่น กระบองเพชร, มอนสเตอร่า, กุหลาบ..."
+          style="flex:1;min-width:180px;background:rgba(0,0,0,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:8px 14px;color:#c8f0a0;font-size:13px;font-family:'DM Mono',monospace;outline:none;transition:border .2s;"
+          onfocus="this.style.borderColor='rgba(100,200,80,0.5)'"
+          onblur="this.style.borderColor='rgba(100,200,80,0.2)'"
+          oninput="savePlantName(this.value)"/>
+        <select id="plant-type" onchange="onPlantTypeChange(this.value)"
+          style="background:rgba(0,0,0,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:8px 14px;color:#c8f0a0;font-size:13px;font-family:'DM Mono',monospace;outline:none;cursor:pointer;">
+          <option value="">-- เลือกประเภท --</option>
+          <option value="ไม้อวบน้ำ/กระบองเพชร">🌵 ไม้อวบน้ำ / กระบองเพชร</option>
+          <option value="ไม้ใบในร่ม">🌿 ไม้ใบในร่ม</option>
+          <option value="ไม้ดอก">🌸 ไม้ดอก</option>
+          <option value="ไม้ผล">🍋 ไม้ผล</option>
+          <option value="ผักสวนครัว">🥬 ผักสวนครัว</option>
+          <option value="ไม้น้ำ">💧 ไม้น้ำ</option>
+          <option value="ไม้ประดับกลางแจ้ง">☀️ ไม้ประดับกลางแจ้ง</option>
+          <option value="สมุนไพร">🌱 สมุนไพร</option>
+        </select>
+      </div>
+
       <div id="ai-body">
-        <div class="ai-empty">ใส่ Gemini API Key แล้วกดวิเคราะห์ 🌱</div>
+        <div class="ai-empty">ใส่ Gemini API Key และชื่อต้นไม้ แล้วกดวิเคราะห์ 🌱</div>
       </div>
     </div>
 
@@ -494,14 +516,9 @@ connectWS();
 
 // ── Test Data Injector ───────────────────────────────────────
 function injectTestData() {
-  sensor = {
-    soil: 45, soilState: "Moist",
-    temp: 28.5, hum: 65, tempState: "Normal",
-    light: 70, lightState: "Bright"
-  };
-  // อัปเดต UI
-  updateUI({...sensor, serverTs: new Date().toISOString()});
-  alert("✅ ใส่ข้อมูลจำลองแล้ว! กดวิเคราะห์ตอนนี้ได้เลย");
+  sensor = {soil:45,soilState:"Moist",temp:28.5,hum:65,tempState:"Normal",light:70,lightState:"Bright"};
+  updateUI({...sensor,serverTs:new Date().toISOString()});
+  document.getElementById("ai-body").innerHTML = '<div class="ai-empty">✅ ใส่ข้อมูลจำลองแล้ว กดวิเคราะห์ได้เลย 🌱</div>';
 }
 
 // ── Gemini API Key helpers ────────────────────────────────────
@@ -523,19 +540,48 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("key-status").textContent = "✅ บันทึกแล้ว";
   }
 });
+
+// ── AI Advisor (Gemini) ───────────────────────────────────────
+// ── Plant Name helpers ───────────────────────────────────────
+function savePlantName(val) {
+  localStorage.setItem("plant_name", val.trim());
+}
+
+function onPlantTypeChange(val) {
+  if (val) {
+    const input = document.getElementById("plant-name");
+    if (!input.value) input.value = val;
+    savePlantName(input.value);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const savedPlant = localStorage.getItem("plant_name") || "";
+  if (savedPlant) document.getElementById("plant-name").value = savedPlant;
+});
+
 function renderText(text) {
   return text
-    .replace(/#{1,3}\s*\*\*(.*?)\*\*/g, "<h4 style='color:#c8f0a0;margin:10px 0 4px;font-size:14px;'>$1</h4>")
+    .replace(/---+/g, "<hr style='border:none;border-top:1px solid rgba(100,200,80,0.15);margin:6px 0;'>")
+    .replace(/#{1,3}\s*\*\*(.*?)\*\*/g, "<b style='color:#c8f0a0;display:block;margin-top:8px;'>$1</b>")
+    .replace(/#{1,3}\s+(.+)/g, "<b style='color:#c8f0a0;display:block;margin-top:8px;'>$1</b>")
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+    .replace(/\*(.*?)\*/g, "<i>$1</i>")
+    .replace(/^\*\s+(.+)/gm, "• $1")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/\n/g, "<br>");
+}\s*\*\*(.*?)\*\*/g, "<h4 style='color:#c8f0a0;margin:10px 0 4px;font-size:14px;'>$1</h4>")
     .replace(/#{1,3}\s+(.+)/g, "<h4 style='color:#c8f0a0;margin:10px 0 4px;font-size:14px;'>$1</h4>")
     .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
     .replace(/\*(.*?)\*/g, "<i>$1</i>")
-    .replace(/^---$/gm, "<hr style='border-color:rgba(100,200,80,0.2);margin:10px 0;'>")
     .replace(/^-\s+(.+)/gm, "• $1")
     .replace(/\n/g, "<br>");
 }
-// ── AI Advisor (Gemini) ───────────────────────────────────────
 async function fetchAIAdvice() {
-  if (!sensor) { alert("รอรับข้อมูลเซนเซอร์ก่อน"); return; }
+  if (!sensor) {
+    sensor = {soil:45, soilState:"Moist", temp:28.5, hum:65, tempState:"Normal", light:70, lightState:"Bright"};
+    updateUI({...sensor, serverTs: new Date().toISOString()});
+  }
 
   const apiKey = (document.getElementById("gemini-key").value || "").trim();
   if (!apiKey) {
@@ -560,7 +606,20 @@ async function fetchAIAdvice() {
       <div class="ai-loading-text">Gemini กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
     </div>`;
 
-  const prompt = `วิเคราะห์สภาพต้นไม้และแนะนำการดูแลเป็นภาษาไทย ข้อมูลเซนเซอร์: ดิน:${sensor.soil.toFixed(0)}% (${sensor.soilState}) อุณหภูมิ:${sensor.temp.toFixed(1)}C (${sensor.tempState}) ความชื้น:${sensor.hum.toFixed(0)}% แสง:${sensor.light.toFixed(0)}% (${sensor.lightState}) กรุณาตอบ 6 หัวข้อ: 1.สรุปสภาพ 2.ปัญหาเร่งด่วน 3.การรดน้ำ 4.แสง 5.อุณหภูมิ 6.สิ่งที่ควรทำใน24ชม ตอบภาษาไทย ใช้ emoji`;
+  const plantName = (document.getElementById("plant-name").value || "").trim();
+  const plantType = document.getElementById("plant-type").value || "";
+  const plantInfo = plantName ? `${plantName}${plantType ? " ("+plantType+")" : ""}` : "ไม่ระบุชนิด";
+
+  const prompt = `คุณเป็นผู้เชี่ยวชาญดูแลต้นไม้ชนิด ${plantInfo}
+ข้อมูลเซนเซอร์: ดิน ${sensor.soil.toFixed(0)}% (${sensor.soilState}) | อุณหภูมิ ${sensor.temp.toFixed(1)}°C (${sensor.tempState}) | ความชื้นอากาศ ${sensor.hum.toFixed(0)}% | แสง ${sensor.light.toFixed(0)}% (${sensor.lightState})
+
+ให้คำแนะนำดูแล ${plantInfo} เป็นภาษาไทย กระชับ ตรงประเด็น ครบ 6 หัวข้อ (ห้ามซ้ำข้อมูลเซนเซอร์ ห้ามใช้ ---):
+1. 🌱 สรุปสภาพแวดล้อม
+2. ⚠️ ปัญหาเร่งด่วน
+3. 💧 การรดน้ำ (เหมาะกับ ${plantInfo})
+4. ☀️ แสง (เหมาะกับ ${plantInfo})
+5. 🌡️ อุณหภูมิและความชื้น
+6. ✅ สิ่งที่ควรทำใน 24 ชม`;
 
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
@@ -570,7 +629,7 @@ async function fetchAIAdvice() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 3000, temperature: 0.7 }
+        generationConfig: { maxOutputTokens: 8192, temperature: 0.7 }
       })
     });
 
