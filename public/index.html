@@ -567,7 +567,7 @@ async function fetchAIAdvice() {
 
 ตอบเป็นภาษาไทย กระชับ ชัดเจน ใช้ emoji`;
 
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
   try {
     const res = await fetch(GEMINI_URL, {
