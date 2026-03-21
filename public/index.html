@@ -244,20 +244,36 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto S
     <div class="ai-card">
       <div class="ai-header">
         <div>
-          <div class="ai-title">🌿 AI Plant Care Advisor</div>
+          <div class="ai-title">🌿 AI Plant Care Advisor <span style="font-size:11px;color:#7a9060;font-family:'DM Mono',monospace;font-weight:400;">powered by Gemini</span></div>
           <div class="ai-sub" id="ai-sub">วิเคราะห์สภาพแวดล้อมและให้คำแนะนำดูแลต้นไม้</div>
         </div>
         <button class="ai-btn" id="ai-btn" onclick="fetchAIAdvice()">
           🔍 วิเคราะห์ตอนนี้
         </button>
       </div>
+      <!-- API Key Input -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:#5a7040;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;">🔑 Gemini API Key</span>
+        <input id="gemini-key" type="password" placeholder="AIzaSy..."
+          style="flex:1;min-width:200px;background:rgba(0,0,0,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:8px 14px;color:#c8f0a0;font-size:13px;font-family:'DM Mono',monospace;outline:none;transition:border .2s;"
+          oninput="saveKey(this.value)"
+          onfocus="this.style.borderColor='rgba(100,200,80,0.5)'"
+          onblur="this.style.borderColor='rgba(100,200,80,0.2)'"/>
+        <button onclick="toggleKeyVisible()" title="แสดง/ซ่อน"
+          style="background:rgba(100,200,80,0.08);border:1px solid rgba(100,200,80,0.2);border-radius:8px;padding:7px 12px;color:#7a9060;cursor:pointer;font-size:13px;flex-shrink:0;">👁</button>
+        <span id="key-status" style="font-size:11px;font-family:'DM Mono',monospace;color:#5a7040;flex-shrink:0;"></span>
+      </div>
+      <div style="font-size:11px;color:#3a5025;font-family:'DM Mono',monospace;margin-bottom:16px;">
+        รับ API Key ฟรีที่ → <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#6a9045;text-decoration:underline;">aistudio.google.com</a>
+        &nbsp;·&nbsp; Key เก็บใน localStorage ของเบราว์เซอร์เท่านั้น
+      </div>
       <div id="ai-body">
-        <div class="ai-empty">กดปุ่มวิเคราะห์เพื่อรับคำแนะนำจาก AI 🌱</div>
+        <div class="ai-empty">ใส่ Gemini API Key แล้วกดวิเคราะห์ 🌱</div>
       </div>
     </div>
 
     <div style="margin-top:38px;text-align:center;color:rgba(255,255,255,.1);font-size:11px;font-family:'DM Mono',monospace">
-      PlantSense IoT · Node.js + WebSocket · Railway · Claude AI · ESP32
+      PlantSense IoT · Node.js + WebSocket · Railway · Gemini AI · ESP32
     </div>
   </div>
 </div>
@@ -471,12 +487,41 @@ function connectWS() {
 
 connectWS();
 
-// ── AI Advisor ────────────────────────────────────────────────
+// ── Gemini API Key helpers ────────────────────────────────────
+function saveKey(val) {
+  localStorage.setItem("gemini_key", val.trim());
+  document.getElementById("key-status").textContent = val.trim().length > 10 ? "✅ บันทึกแล้ว" : "";
+}
+
+function toggleKeyVisible() {
+  const el = document.getElementById("gemini-key");
+  el.type = el.type === "password" ? "text" : "password";
+}
+
+// โหลด key จาก localStorage ตอนเปิดหน้า
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("gemini_key") || "";
+  if (saved) {
+    document.getElementById("gemini-key").value = saved;
+    document.getElementById("key-status").textContent = "✅ บันทึกแล้ว";
+  }
+});
+
+// ── AI Advisor (Gemini) ───────────────────────────────────────
 async function fetchAIAdvice() {
   if (!sensor) { alert("รอรับข้อมูลเซนเซอร์ก่อน"); return; }
+
+  const apiKey = (document.getElementById("gemini-key").value || "").trim();
+  if (!apiKey) {
+    document.getElementById("ai-body").innerHTML =
+      `<div class="ai-result" style="color:#f0a060">⚠️ กรุณาใส่ Gemini API Key ก่อน<br><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#8ac060">รับ key ฟรีที่ aistudio.google.com</a></div>`;
+    return;
+  }
+
   const btn  = document.getElementById("ai-btn");
   const body = document.getElementById("ai-body");
   const sub  = document.getElementById("ai-sub");
+
   btn.disabled = true;
   btn.innerHTML = `<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> กำลังวิเคราะห์...`;
   body.innerHTML = `
@@ -486,7 +531,7 @@ async function fetchAIAdvice() {
         <div class="ai-dot" style="animation:bounce 1.2s .2s ease-in-out infinite"></div>
         <div class="ai-dot" style="animation:bounce 1.2s .4s ease-in-out infinite"></div>
       </div>
-      <div class="ai-loading-text">AI กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
+      <div class="ai-loading-text">Gemini กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
     </div>`;
 
   const prompt = `คุณเป็นผู้เชี่ยวชาญด้านการดูแลต้นไม้ในร่ม ข้อมูลเซนเซอร์ IoT ปัจจุบัน:
@@ -505,26 +550,44 @@ async function fetchAIAdvice() {
 
 ตอบเป็นภาษาไทย กระชับ ชัดเจน ใช้ emoji`;
 
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(GEMINI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 1024, temperature: 0.7 }
       })
     });
+
+    if (!res.ok) {
+      const err = await res.json();
+      const msg = err?.error?.message || `HTTP ${res.status}`;
+      // API Key ผิด
+      if (res.status === 400 || res.status === 403) {
+        body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ API Key ไม่ถูกต้อง: ${msg}</div>`;
+      } else {
+        body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ Gemini Error: ${msg}</div>`;
+      }
+      btn.disabled = false;
+      btn.innerHTML = "🔍 วิเคราะห์ตอนนี้";
+      return;
+    }
+
     const data = await res.json();
-    const text = data.content?.map(c => c.text || "").join("") || "ไม่สามารถดึงข้อมูลได้";
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "ไม่สามารถดึงข้อมูลได้";
     const now  = new Date().toLocaleTimeString("th-TH");
-    body.innerHTML = `<div class="ai-result">${text}</div>`;
-    sub.textContent = `อัปเดต ${now}`;
+    body.innerHTML = `<div class="ai-result">${text.replace(/\n/g, "<br>")}</div>`;
+    sub.textContent = `Gemini · อัปเดต ${now}`;
+
   } catch (err) {
-    body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ เชื่อมต่อ AI ไม่ได้: ${err.message}</div>`;
+    body.innerHTML = `<div class="ai-result" style="color:#f07070">❌ เชื่อมต่อ Gemini ไม่ได้: ${err.message}<br><span style="font-size:12px;opacity:.7;">ตรวจสอบ API Key และการเชื่อมต่ออินเทอร์เน็ต</span></div>`;
   }
+
   btn.disabled = false;
-  btn.innerHTML = `🔍 วิเคราะห์ตอนนี้`;
+  btn.innerHTML = "🔍 วิเคราะห์ตอนนี้";
 }
 </script>
 </body>
