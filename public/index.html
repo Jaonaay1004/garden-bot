@@ -551,26 +551,9 @@ async function fetchAIAdvice() {
       <div class="ai-loading-text">Gemini กำลังวิเคราะห์ข้อมูลเซนเซอร์...</div>
     </div>`;
 
-  const prompt = `ข้อมูลเซนเซอร์ต้นไม้:
-- ดิน:${sensor.soil.toFixed(0)}%  (${sensor.soilState})
-- อุณหภูมิ:${sensor.temp.toFixed(1)}°C (${sensor.tempState})
-- ความชื้นอากาศ:${sensor.hum.toFixed(0)}%
-- แสง:${sensor.light.toFixed(0)}% (${sensor.lightState})
+  const prompt = `วิเคราะห์สภาพต้นไม้และแนะนำการดูแลเป็นภาษาไทย ข้อมูลเซนเซอร์: ดิน:${sensor.soil.toFixed(0)}% (${sensor.soilState}) อุณหภูมิ:${sensor.temp.toFixed(1)}C (${sensor.tempState}) ความชื้น:${sensor.hum.toFixed(0)}% แสง:${sensor.light.toFixed(0)}% (${sensor.lightState}) กรุณาตอบ 6 หัวข้อ: 1.สรุปสภาพ 2.ปัญหาเร่งด่วน 3.การรดน้ำ 4.แสง 5.อุณหภูมิ 6.สิ่งที่ควรทำใน24ชม ตอบภาษาไทย ใช้ emoji`;
 
- 
-
-วิเคราะห์และแนะนำการดูแลต้นไม้เป็นภาษาไทย ให้ครบ 6 หัวข้อ: สรุปสภาพ, ปัญหาเร่งด่วน, การรดน้ำ, แสง, อุณหภูมิ, สิ่งที่ควรทำใน 24 ชม`;
-กรุณาวิเคราะห์และให้คำแนะนำ:
-1. 🌱 สรุปสภาพแวดล้อมโดยรวม
-2. ⚠️ ปัญหาที่ต้องแก้ไขเร่งด่วน (ถ้ามี)
-3. 💧 คำแนะนำการรดน้ำ
-4. ☀️ คำแนะนำเรื่องแสง
-5. 🌡️ คำแนะนำเรื่องอุณหภูมิ/ความชื้น
-6. ✅ สิ่งที่ควรทำภายใน 24 ชั่วโมง
-
-ตอบเป็นภาษาไทย กระชับ ชัดเจน ใช้ emoji`;
-
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
   try {
     const res = await fetch(GEMINI_URL, {
@@ -599,7 +582,7 @@ async function fetchAIAdvice() {
     const data = await res.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "ไม่สามารถดึงข้อมูลได้";
     const now  = new Date().toLocaleTimeString("th-TH");
-    body.innerHTML = `<div class="ai-result">${text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>").replace(/\n/g, '<br>')}</div>`;
+    body.innerHTML = `<div class="ai-result">${text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>")}</div>`;
     sub.textContent = `Gemini · อัปเดต ${now}`;
 
   } catch (err) {
