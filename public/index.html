@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
@@ -513,6 +513,7 @@ function connectWS() {
 }
 
 connectWS();
+setInterval(function(){fetch("/api/latest").then(function(r){if(r.status===204)return null;return r.json();}).then(function(d){if(d&&d.soil!==undefined){sensor=d;updateUI(d);}}).catch(function(){});},5000);
 
 // ── Test Data Injector ───────────────────────────────────────
 function injectTestData() {
